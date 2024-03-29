@@ -1,0 +1,12 @@
+[package]
+name = "anakin"
+version = "0.1.0"
+edition = "2021"
+description = "Automatically kill orphans"
+
+[dependencies]
+anyhow = { version = "1.0.81", features = ["backtrace"] }
+env_logger = "0.11.3"
+log = "0.4.21"
+nix = { version = "0.28.0", features = ["process", "signal"] }
+tokio = { version = "1.36.0", features = ["process", "tokio-macros", "macros", "rt", "fs", "io-util", "time"] }

@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            cargo_extra_flags: --target x86_64-unknown-linux-musl
+            output_executable: target/x86_64-unknown-linux-musl/release/anakin
+            output_executable_upload_as: anakin-linux
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Musl target
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: >
+          sudo apt-get install musl-tools &&
+          rustup target add x86_64-unknown-linux-musl &&
+          musl-gcc --version
+
+      - name: Versions
+        run: cargo --version && rustc --version
+
+      - name: Build
+        run: cargo build --verbose --release --locked ${{ matrix.cargo_extra_flags }}
+
+      - name: Build wheel
+        run: |
+          python3 -m pip install maturin
+          maturin build --release --strip --locked ${{ matrix.cargo_extra_flags }}
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: target/wheels/*.whl
+
+      - name: Rename Output
+        shell: pwsh
+        run: Move-Item -Path "${{ matrix.output_executable }}" -Destination "target/${{ matrix.output_executable_upload_as }}"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: "target/${{ matrix.output_executable_upload_as }}"
+          fail_on_unmatched_files: true
