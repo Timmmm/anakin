@@ -3,6 +3,7 @@ name = "anakin"
 version = "0.1.0"
 edition = "2021"
 description = "Automatically kill orphans"
+license = "MIT"
 
 [dependencies]
 anyhow = { version = "1.0.81", features = ["backtrace"] }

@@ -2,7 +2,7 @@
 
 This is a tool that runs another command, and kills all the orphans it generates.
 
-When a process is killed on Linux, its children are not automatically killed too. Instead they get reparented to the init process and live on. In many cases this is not what you want.
+When a process is killed on Linux, its children are not automatically killed too. Instead they get reparented to the init process (the first process started by the kernel) and live on. In many cases this is not what you want.
 
 In particular this was written to handle `gitlab-runner` which runs CI jobs. When a job times out `gitlab-runner` only kills the process that it started. Any child processes of that may be orphaned and continue running.
 
@@ -37,3 +37,7 @@ Logging is controlled by the following environment variables:
 * `ANAKIN_LOG`, e.g. `ANAKIN_LOG=info` will print when orphans are killed. The default level is `error`.
 * `ANAKIN_LOG_STYLE` controls the colour output. It can be `auto` (default), `always` or `never`.
 * `ANAKIN_LOG_FILE` if set logs to that filename, plus the process ID. Otherwise it logs to stderr.
+
+## License
+
+This is licensed under the MIT license. See the `LICENSE-MIT` file.
